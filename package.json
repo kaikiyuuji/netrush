@@ -1,0 +1,12 @@
+{
+  "name": "netrush",
+  "version": "1.0.0",
+  "description": "Jogo web local 3D que transforma tráfego de rede gravado (PCAP/PCAPNG/JSON/CSV) em veículos atravessando uma ponte.",
+  "type": "module",
+  "scripts": {
+    "start": "python3 -m http.server 8080 || npx serve -l 8080 .",
+    "samples": "node scripts/generate_samples.mjs",
+    "test": "node scripts/test_parsers.mjs"
+  },
+  "license": "MIT"
+}

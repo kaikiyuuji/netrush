@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>netRush — tráfego de rede em 3D</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+        "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+      }
+    }
+  </script>
+</head>
+<body>
+  <div id="scene-container"></div>
+
+  <!-- Painel de estatísticas -->
+  <div id="stats-panel" class="panel">
+    <h1>netRush</h1>
+    <div class="stat-row"><span>Pacotes processados</span><strong id="stat-packets">0</strong></div>
+    <div class="stat-row"><span>Pacotes/s (dataset)</span><strong id="stat-pps">0</strong></div>
+    <div class="stat-row"><span>Protocolo dominante</span><strong id="stat-dominant">—</strong></div>
+    <div class="stat-row"><span>Veículos na ponte</span><strong id="stat-vehicles">0</strong></div>
+    <canvas id="chart" width="280" height="80"></canvas>
+    <div class="chart-label">volume por janela de tempo</div>
+  </div>
+
+  <!-- Legenda protocolo -> veículo -->
+  <div id="legend-panel" class="panel">
+    <h2>Legenda</h2>
+    <div id="legend-items"></div>
+  </div>
+
+  <!-- Banner de alertas -->
+  <div id="alert-banner" class="alert"></div>
+
+  <!-- Controles -->
+  <div id="controls-panel" class="panel">
+    <div class="control-group">
+      <label class="file-button">
+        📁 Abrir PCAP / dataset
+        <input type="file" id="file-input" accept=".pcap,.pcapng,.cap,.json,.csv" hidden />
+      </label>
+      <button id="btn-demo" title="Gera tráfego sintético de demonstração">🎮 Demo</button>
+    </div>
+    <div class="control-group">
+      <button id="btn-play" disabled>▶ Iniciar</button>
+      <button id="btn-reset" disabled>⟲ Reiniciar</button>
+    </div>
+    <div class="control-group">
+      <label>Velocidade
+        <select id="speed-select">
+          <option value="0.5">0.5x</option>
+          <option value="1" selected>1x</option>
+          <option value="2">2x</option>
+          <option value="5">5x</option>
+          <option value="10">10x</option>
+        </select>
+      </label>
+      <label>Janela
+        <select id="window-select">
+          <option value="250">250 ms</option>
+          <option value="500" selected>500 ms</option>
+          <option value="1000">1 s</option>
+        </select>
+      </label>
+    </div>
+    <div class="control-group">
+      <label>Densidade <span id="density-value">1.0x</span>
+        <input type="range" id="density-range" min="0.2" max="3" step="0.1" value="1" />
+      </label>
+      <label>Máx. veículos/s <span id="maxvps-value">24</span>
+        <input type="range" id="maxvps-range" min="2" max="60" step="1" value="24" />
+      </label>
+    </div>
+    <div class="control-group">
+      <label class="toggle">
+        <input type="checkbox" id="cinematic-toggle" />
+        <span>Modo cinematográfico</span>
+      </label>
+    </div>
+    <div id="progress-bar"><div id="progress-fill"></div></div>
+    <div id="status">Selecione um arquivo PCAP/PCAPNG/JSON/CSV ou clique em Demo.</div>
+  </div>
+
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>
