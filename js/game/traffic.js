@@ -54,55 +54,54 @@ export class TrafficManager {
     this.spawnQueue.sort((a, b) => a.at - b.at);
   }
 
-  // Escolhe a faixa com mais espaço na entrada, com forte aleatorização
-  // entre faixas parecidas para distribuir o fluxo (evita fila única).
-  pickLane(dir) {
-    const lanes = this.lanes[dir];
-    let best = 0;
-    let bestScore = -Infinity;
-    for (let i = 0; i < lanes.length; i++) {
-      const last = lanes[i][lanes[i].length - 1];
-      const entrySpace = last
-        ? last.progress - last.vehicle.userData.length / 2
-        : 200;
-      const score = entrySpace + Math.random() * 40;
-      if (score > bestScore) { bestScore = score; best = i; }
-    }
-    return best;
-  }
-
   spawn(item) {
     if (this.onBridgeCount >= MAX_ON_BRIDGE) return false;
     const vehicle = createVehicle(item.cat, item.sizeFactor);
-    const laneIdx = this.pickLane(item.dir);
-    const lane = this.lanes[item.dir][laneIdx];
-    const last = lane[lane.length - 1];
+    const lanes = this.lanes[item.dir];
 
-    // Sem espaço na boca da ponte? Entra na fila fora da tela, atrás do
-    // último veículo (progress negativo), em vez de ser descartado.
-    let start = 0;
-    if (last) {
-      const limit = last.progress
-        - (last.vehicle.userData.length + vehicle.userData.length) / 2 - MIN_GAP;
-      start = Math.min(0, limit);
+    // Tenta todas as faixas, da mais folgada para a mais cheia, com leve
+    // aleatorização entre faixas parecidas para distribuir o fluxo
+    // (evita fila única e garante vazões altas).
+    const order = lanes
+      .map((lane, i) => {
+        const last = lane[lane.length - 1];
+        const entrySpace = last
+          ? last.progress - last.vehicle.userData.length / 2
+          : 1000;
+        return { i, score: entrySpace + Math.random() * 30 };
+      })
+      .sort((a, b) => b.score - a.score);
+
+    for (const { i } of order) {
+      const lane = lanes[i];
+      const last = lane[lane.length - 1];
+      // Sem espaço na boca da ponte? Entra na fila fora da tela, atrás do
+      // último veículo (progress negativo), em vez de ser descartado.
+      let start = 0;
+      if (last) {
+        const limit = last.progress
+          - (last.vehicle.userData.length + vehicle.userData.length) / 2 - MIN_GAP;
+        start = Math.min(0, limit);
+      }
+      if (start < -ENTRY_BUFFER) continue; // fila desta faixa cheia
+
+      const z = item.dir === 'out' ? BRIDGE.lanesOut[i] : BRIDGE.lanesIn[i];
+      const x0 = item.dir === 'out' ? -BRIDGE.spawnX + start : BRIDGE.spawnX - start;
+      vehicle.position.set(x0, BRIDGE.deckY + 0.02, z);
+      vehicle.rotation.y = item.dir === 'out' ? 0 : Math.PI;
+      this.scene.add(vehicle);
+      lane.push({
+        vehicle,
+        dir: item.dir,
+        cat: item.cat,
+        progress: start,
+        speed: last ? last.speed : 0,
+        desired: vehicle.userData.speed * (0.9 + Math.random() * 0.2),
+      });
+      this.onBridgeCount++;
+      return true;
     }
-    if (start < -ENTRY_BUFFER) return false; // fila desta faixa cheia
-
-    const z = item.dir === 'out' ? BRIDGE.lanesOut[laneIdx] : BRIDGE.lanesIn[laneIdx];
-    const x0 = item.dir === 'out' ? -BRIDGE.spawnX + start : BRIDGE.spawnX - start;
-    vehicle.position.set(x0, BRIDGE.deckY + 0.02, z);
-    vehicle.rotation.y = item.dir === 'out' ? 0 : Math.PI;
-    this.scene.add(vehicle);
-    lane.push({
-      vehicle,
-      dir: item.dir,
-      cat: item.cat,
-      progress: start,
-      speed: last ? last.speed : 0,
-      desired: vehicle.userData.speed * (0.9 + Math.random() * 0.2),
-    });
-    this.onBridgeCount++;
-    return true;
+    return false; // todas as faixas deste sentido estão com a fila cheia
   }
 
   update(dt, elapsed) {

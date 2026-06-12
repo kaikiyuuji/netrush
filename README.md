@@ -97,10 +97,11 @@ pacotes HTTPS num segundo viram ~16 motocicletas, não 800.
 
 ### Gameplay e ambientação
 
-- Cenário de **anoitecer urbano**: ponte estaiada com fitas de LED, skyline
-  iluminado nas duas margens com quarteirões e iluminação pública, orla
-  distante fechando o horizonte, barcos cruzando a baía, céu em gradiente
-  com estrelas e lua, água animada e veículos modernos com faróis acesos.
+- Cenário de **noite urbana low-poly**: céu quase preto, prédios escuros com
+  janelas grandes e esparsas iluminadas nas margens e ao fundo, placa
+  luminosa "PACKET HIGHWAY" sobre a pista, postes com barra de luz, asfalto
+  escuro com linhas amarelas, barcos cruzando a baía e veículos chapados
+  com faróis e lanternas quadrados acesos.
 - Ponte cheia gera **congestionamento**: veículos desaceleram (car-following
   com trava anticolisão — um veículo nunca atravessa o outro) e o HUD avisa
   "horário de pico".
@@ -121,8 +122,11 @@ pacotes HTTPS num segundo viram ~16 motocicletas, não 800.
   da ponte, os veículos formam fila na via de acesso em vez de sumir)
 - Gerar veículo — painel lateral com um botão por tipo de requisição, que
   coloca na ponte um veículo daquele tipo na hora
+- Tráfego ao vivo — painel com a lista das requisições passando (nome,
+  direção e tamanho de cada uma)
 - Modo cinematográfico — liga/desliga
-- Mouse — orbitar/zoom na câmera (fora do modo cinematográfico)
+- Mouse — arrastar para orbitar, botão direito para deslocar (pan) e roda
+  para zoom (fora do modo cinematográfico)
 
 ## Privacidade
 

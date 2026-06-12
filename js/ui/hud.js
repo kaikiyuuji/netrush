@@ -14,6 +14,15 @@ function icon(key) {
   return `<i class="fa-solid ${VEHICLE_ICONS[key]}"></i>`;
 }
 
+function formatBytes(n) {
+  if (!Number.isFinite(n)) return '—';
+  if (n < 1024) return `${Math.round(n)} B`;
+  if (n < 1024 * 1024) return `${(n / 1024).toFixed(1)} KB`;
+  return `${(n / (1024 * 1024)).toFixed(2)} MB`;
+}
+
+const FEED_MAX_ROWS = 40;
+
 export class HUD {
   constructor() {
     this.statPackets = document.getElementById('stat-packets');
@@ -25,6 +34,7 @@ export class HUD {
     this.progressEl = document.getElementById('progress-fill');
     this.chartCanvas = document.getElementById('chart');
     this.chartCtx = this.chartCanvas.getContext('2d');
+    this.feedEl = document.getElementById('feed-items');
     this.history = []; // últimas janelas: { counts, totalPackets, pps }
     this.totalPackets = 0;
     this.alertTimer = null;
@@ -67,6 +77,34 @@ export class HUD {
     }
   }
 
+  // Feed do tráfego passando: nome (categoria), tamanho e direção de cada
+  // requisição amostrada na janela. Itens novos entram no topo.
+  addFeedEntries(entries) {
+    if (!entries.length) return;
+    const frag = document.createDocumentFragment();
+    for (const e of entries) {
+      const cat = CATEGORIES[e.cat];
+      if (!cat) continue;
+      const row = document.createElement('div');
+      row.className = 'feed-row';
+      const dirIcon = e.manual
+        ? '<i class="fa-solid fa-hand-pointer feed-dir manual"></i>'
+        : e.dir === 'out'
+          ? '<i class="fa-solid fa-arrow-right feed-dir out"></i>'
+          : '<i class="fa-solid fa-arrow-left feed-dir in"></i>';
+      row.innerHTML =
+        `<span class="legend-icon" style="color:${cat.css}">${icon(e.cat)}</span>` +
+        `<span class="feed-name">${cat.label}</span>` +
+        dirIcon +
+        `<span class="feed-size">${e.manual ? 'manual' : formatBytes(e.size)}</span>`;
+      frag.prepend(row);
+    }
+    this.feedEl.prepend(frag);
+    while (this.feedEl.childElementCount > FEED_MAX_ROWS) {
+      this.feedEl.lastElementChild.remove();
+    }
+  }
+
   setStatus(text) { this.statusEl.textContent = text; }
 
   showAlert(text, kind = 'warn', iconClass = 'fa-triangle-exclamation') {
@@ -83,6 +121,7 @@ export class HUD {
     this.statDominant.textContent = '—';
     this.statPps.textContent = '0';
     this.progressEl.style.width = '0%';
+    this.feedEl.replaceChildren();
     this.drawChart();
   }
 

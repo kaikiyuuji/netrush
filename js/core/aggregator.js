@@ -30,6 +30,7 @@ export function aggregate(events, windowMs = 500) {
         counts: emptyCounts(),
         totalPackets: 0,
         totalBytes: 0,
+        samples: [], // amostra de requisições da janela, para o feed do HUD
       };
       windows.push(current);
     }
@@ -39,6 +40,9 @@ export function aggregate(events, windowMs = 500) {
     if (e.dir === 'out') c.out += 1; else c.in += 1;
     current.totalPackets += 1;
     current.totalBytes += e.size;
+    if (current.samples.length < 12) {
+      current.samples.push({ cat: e.cat, size: e.size, dir: e.dir });
+    }
   }
 
   return { windows, firstTs, lastTs, windowMs };

@@ -17,7 +17,10 @@ const hud = new HUD();
 const replay = new Replay();
 
 // Botões do painel lateral geram um veículo do tipo clicado.
-hud.onSpawnRequest = (cat) => traffic.spawnManual(cat);
+hud.onSpawnRequest = (cat) => {
+  traffic.spawnManual(cat);
+  hud.addFeedEntries([{ cat, manual: true }]);
+};
 
 const settings = {
   density: 1,
@@ -56,6 +59,7 @@ function detectAnomaly(win) {
 
 replay.onWindow = (win, speed) => {
   hud.onWindow(win, settings.windowMs);
+  hud.addFeedEntries(win.samples || []);
   detectAnomaly(win);
 
   const spawns = vehiclesForWindow(win, {
