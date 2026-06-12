@@ -28,7 +28,9 @@ export class HUD {
     this.history = []; // últimas janelas: { counts, totalPackets, pps }
     this.totalPackets = 0;
     this.alertTimer = null;
+    this.onSpawnRequest = null; // callback(categoria) dos botões de geração
     this.buildLegend();
+    this.buildSpawner();
   }
 
   buildLegend() {
@@ -42,6 +44,26 @@ export class HUD {
         `<span class="legend-proto">${cat.label}</span>` +
         `<span class="legend-vehicle">${cat.vehicle}</span>`;
       el.appendChild(row);
+    }
+  }
+
+  // Painel lateral: um botão por tipo de requisição que gera um veículo
+  // daquele tipo na ponte.
+  buildSpawner() {
+    const el = document.getElementById('spawner-items');
+    for (const key of CATEGORY_KEYS) {
+      const cat = CATEGORIES[key];
+      const btn = document.createElement('button');
+      btn.className = 'spawn-btn';
+      btn.style.setProperty('--cat-color', cat.css);
+      btn.title = `Gerar 1 ${cat.vehicle.toLowerCase()} (${cat.label})`;
+      btn.innerHTML =
+        `<span class="legend-icon" style="color:${cat.css}">${icon(key)}</span>` +
+        `<span>${cat.label}</span>`;
+      btn.addEventListener('click', () => {
+        if (this.onSpawnRequest) this.onSpawnRequest(key);
+      });
+      el.appendChild(btn);
     }
   }
 

@@ -139,13 +139,60 @@ const BEACON_MAT = new THREE.MeshStandardMaterial({
   color: 0x550000, emissive: 0xff3344, emissiveIntensity: 2,
 });
 
+// Textura de quarteirões para o topo das plataformas urbanas: malha de
+// ruas com pontos de iluminação pública.
+function cityGroundTexture() {
+  const canvas = document.createElement('canvas');
+  canvas.width = 512; canvas.height = 512;
+  const ctx = canvas.getContext('2d');
+  ctx.fillStyle = '#0a0e18';
+  ctx.fillRect(0, 0, 512, 512);
+  for (let gx = 0; gx < 8; gx++) {
+    for (let gy = 0; gy < 8; gy++) {
+      const shade = 14 + Math.floor(Math.random() * 8);
+      ctx.fillStyle = `rgb(${shade}, ${shade + 5}, ${shade + 14})`;
+      ctx.fillRect(gx * 64 + 7, gy * 64 + 7, 50, 50);
+    }
+  }
+  // Postes ao longo das ruas.
+  ctx.fillStyle = '#ffd9a0';
+  for (let i = 0; i < 220; i++) {
+    const onVertical = Math.random() < 0.5;
+    const street = Math.floor(Math.random() * 9) * 64;
+    const along = Math.random() * 512;
+    ctx.globalAlpha = 0.5 + Math.random() * 0.5;
+    if (onVertical) ctx.fillRect(street - 1, along, 2.5, 2.5);
+    else ctx.fillRect(along, street - 1, 2.5, 2.5);
+  }
+  ctx.globalAlpha = 1;
+  const tex = new THREE.CanvasTexture(canvas);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  tex.wrapS = THREE.RepeatWrapping;
+  tex.wrapT = THREE.RepeatWrapping;
+  return tex;
+}
+
 function buildCity(scene, sideSign) {
   const L = BRIDGE.length;
-  const groundMat = new THREE.MeshStandardMaterial({ color: 0x0d1320, roughness: 1 });
-  const ground = new THREE.Mesh(new THREE.BoxGeometry(190, 10, 460), groundMat);
+  const groundSideMat = new THREE.MeshStandardMaterial({ color: 0x0d1320, roughness: 1 });
+  const groundTex = cityGroundTexture();
+  groundTex.repeat.set(2, 5);
+  const groundTopMat = new THREE.MeshStandardMaterial({ map: groundTex, roughness: 1 });
+  const ground = new THREE.Mesh(
+    new THREE.BoxGeometry(190, 10, 460),
+    [groundSideMat, groundSideMat, groundTopMat, groundSideMat, groundSideMat, groundSideMat]
+  );
   ground.position.set(sideSign * (L / 2 + 100), BRIDGE.deckY - 5.6, 0);
   ground.receiveShadow = true;
   scene.add(ground);
+
+  // Murada da orla na borda voltada para a água.
+  const seawall = new THREE.Mesh(
+    new THREE.BoxGeometry(2.5, 12, 460),
+    new THREE.MeshStandardMaterial({ color: 0x1a2334, roughness: 0.9 })
+  );
+  seawall.position.set(sideSign * (L / 2 + 4), BRIDGE.deckY - 6.4, 0);
+  scene.add(seawall);
 
   for (let i = 0; i < 24; i++) {
     const w = 12 + Math.random() * 16;
@@ -173,6 +220,70 @@ function buildCity(scene, sideSign) {
       scene.add(beacon);
     }
   }
+}
+
+// Orla distante fechando o horizonte: faixas de terra com silhuetas de
+// prédios dos dois lados da baía (a névoa suaviza tudo).
+function buildFarSkyline(scene) {
+  const landMat = new THREE.MeshStandardMaterial({ color: 0x0a101c, roughness: 1 });
+  for (const zSide of [-1, 1]) {
+    const strip = new THREE.Mesh(new THREE.BoxGeometry(1100, 8, 150), landMat);
+    strip.position.set(0, BRIDGE.deckY - 15, zSide * 400);
+    scene.add(strip);
+    for (let i = 0; i < 16; i++) {
+      const w = 20 + Math.random() * 35;
+      const d = 18 + Math.random() * 30;
+      const h = 45 + Math.random() * 110;
+      const x = -520 + Math.random() * 1040;
+      const z = zSide * (355 + Math.random() * 95);
+      const sideMat = new THREE.MeshStandardMaterial({
+        color: 0x080c16, roughness: 0.95,
+        emissive: 0xffffff, emissiveMap: windowTexture(), emissiveIntensity: 0.8,
+      });
+      const tower = new THREE.Mesh(
+        new THREE.BoxGeometry(w, h, d),
+        [sideMat, sideMat, ROOF_MAT, ROOF_MAT, sideMat, sideMat]
+      );
+      tower.position.set(x, BRIDGE.deckY - 11 + h / 2, z);
+      scene.add(tower);
+      if (h > 120) {
+        const beacon = new THREE.Mesh(new THREE.SphereGeometry(0.9, 8, 6), BEACON_MAT);
+        beacon.position.set(x, BRIDGE.deckY - 11 + h + 1.4, z);
+        scene.add(beacon);
+      }
+    }
+  }
+}
+
+// Pequenos barcos iluminados cruzando a baía.
+function buildBoats(scene) {
+  const hullMat = new THREE.MeshStandardMaterial({ color: 0x131a28, roughness: 0.8 });
+  const cabinMat = new THREE.MeshStandardMaterial({
+    color: 0x2a3142, roughness: 0.6,
+    emissive: 0xffd9a0, emissiveIntensity: 1.6,
+  });
+  const boats = [];
+  const lanes = [
+    { x: -38, speed: 4.5, z0: -320 },
+    { x: 28, speed: -3.5, z0: 260 },
+    { x: 86, speed: 5.5, z0: -80 },
+  ];
+  for (const cfg of lanes) {
+    const boat = new THREE.Group();
+    const hull = new THREE.Mesh(new THREE.BoxGeometry(2.4, 1.2, 7), hullMat);
+    hull.position.y = 0.5;
+    boat.add(hull);
+    const cabin = new THREE.Mesh(new THREE.BoxGeometry(1.8, 1.3, 2.4), cabinMat);
+    cabin.position.set(0, 1.6, -0.8);
+    boat.add(cabin);
+    const mastLight = new THREE.Mesh(new THREE.SphereGeometry(0.18, 6, 4), cabinMat);
+    mastLight.position.set(0, 2.7, -0.8);
+    boat.add(mastLight);
+    boat.position.set(cfg.x, BRIDGE.deckY - 16, cfg.z0);
+    scene.add(boat);
+    boats.push({ group: boat, speed: cfg.speed, phase: Math.random() * Math.PI * 2 });
+  }
+  return boats;
 }
 
 // --- ponte estaiada -------------------------------------------------------
@@ -241,10 +352,12 @@ function buildBridge(scene, neonMat) {
   road.receiveShadow = true;
   scene.add(road);
 
-  // Vias de acesso nas margens (os veículos nascem em x = ±132).
+  // Vias de acesso nas margens: longas o bastante para a fila de entrada
+  // que se forma fora da tela (veículos nascem em x = ±132 e podem
+  // aguardar até ~70 unidades atrás desse ponto).
   for (const side of [-1, 1]) {
-    const approach = new THREE.Mesh(new THREE.BoxGeometry(44, 0.5, W), deckMat);
-    approach.position.set(side * (L / 2 + 21), BRIDGE.deckY - 0.26, 0);
+    const approach = new THREE.Mesh(new THREE.BoxGeometry(95, 0.5, W), deckMat);
+    approach.position.set(side * (L / 2 + 47), BRIDGE.deckY - 0.26, 0);
     approach.receiveShadow = true;
     scene.add(approach);
   }
@@ -397,10 +510,12 @@ export function createWorld(container) {
   alertLight.position.set(0, 60, 0);
   scene.add(alertLight);
 
-  // Céu, estrelas, lua e cidades.
+  // Céu, estrelas, lua, cidades, orla distante e barcos.
   const skyUniforms = buildSky(scene);
   buildCity(scene, -1);
   buildCity(scene, 1);
+  buildFarSkyline(scene);
+  const boats = buildBoats(scene);
 
   // Água com ondulação por shader.
   const waterUniform = { value: 0 };
@@ -457,6 +572,15 @@ export function createWorld(container) {
     waterUniform.value = elapsed;
     // Balizamento dos pilones e prédios piscando devagar (material compartilhado).
     BEACON_MAT.emissiveIntensity = 1.2 + Math.sin(elapsed * 2.2) * 1.1;
+
+    // Barcos cruzando a baía, balançando de leve.
+    for (const b of boats) {
+      b.group.position.z += b.speed * dt;
+      if (b.group.position.z > 430) b.group.position.z = -430;
+      if (b.group.position.z < -430) b.group.position.z = 430;
+      b.group.position.y = BRIDGE.deckY - 16 + Math.sin(elapsed * 1.6 + b.phase) * 0.25;
+      b.group.rotation.x = Math.sin(elapsed * 1.3 + b.phase) * 0.04;
+    }
 
     if (state.alertPulse > 0) {
       state.alertPulse -= dt;

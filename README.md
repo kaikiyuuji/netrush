@@ -98,8 +98,9 @@ pacotes HTTPS num segundo viram ~16 motocicletas, não 800.
 ### Gameplay e ambientação
 
 - Cenário de **anoitecer urbano**: ponte estaiada com fitas de LED, skyline
-  iluminado nas duas margens, céu em gradiente com estrelas e lua, água
-  animada e veículos modernos com faróis/lanternas acesos.
+  iluminado nas duas margens com quarteirões e iluminação pública, orla
+  distante fechando o horizonte, barcos cruzando a baía, céu em gradiente
+  com estrelas e lua, água animada e veículos modernos com faróis acesos.
 - Ponte cheia gera **congestionamento**: veículos desaceleram (car-following
   com trava anticolisão — um veículo nunca atravessa o outro) e o HUD avisa
   "horário de pico".
@@ -112,11 +113,14 @@ pacotes HTTPS num segundo viram ~16 motocicletas, não 800.
 
 ## Controles
 
-- ▶/⏸/⟲ — iniciar, pausar e reiniciar o replay
-- Velocidade — 0.5x, 1x, 2x, 5x, 10x
+- Iniciar/Pausar/Reiniciar — controle do replay
+- Velocidade — 0.5x, 1x, 2x, 5x, 10x, 20x
 - Janela — 250 ms, 500 ms ou 1 s de agregação
 - Densidade — multiplicador visual de veículos (0.2x–3x)
-- Máx. veículos/s — teto absoluto de spawns
+- Máx. veículos/s — teto absoluto de spawns (até 100/s; sem espaço na boca
+  da ponte, os veículos formam fila na via de acesso em vez de sumir)
+- Gerar veículo — painel lateral com um botão por tipo de requisição, que
+  coloca na ponte um veículo daquele tipo na hora
 - Modo cinematográfico — liga/desliga
 - Mouse — orbitar/zoom na câmera (fora do modo cinematográfico)
 

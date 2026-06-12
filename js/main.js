@@ -16,6 +16,9 @@ const traffic = new TrafficManager(world.scene);
 const hud = new HUD();
 const replay = new Replay();
 
+// Botões do painel lateral geram um veículo do tipo clicado.
+hud.onSpawnRequest = (cat) => traffic.spawnManual(cat);
+
 const settings = {
   density: 1,
   maxPerSecond: 24,
@@ -205,7 +208,7 @@ function frame(now) {
   elapsed += dt;
 
   replay.update(dt);
-  traffic.speedMultiplier = Math.min(2.5, Math.sqrt(replay.speed)); // replays rápidos aceleram um pouco o trânsito
+  traffic.speedMultiplier = Math.min(4, Math.sqrt(replay.speed)); // replays rápidos aceleram o trânsito
   traffic.update(dt, elapsed);
   world.update(dt, elapsed);
 

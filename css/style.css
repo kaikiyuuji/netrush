@@ -81,6 +81,32 @@ body {
 .legend-proto { color: #e2e8f0; font-weight: 600; min-width: 84px; }
 .legend-vehicle { color: #94a3b8; }
 
+/* --- Geração manual (lado direito, abaixo da legenda) --- */
+#spawner-panel {
+  top: 360px;
+  right: 16px;
+  width: 250px;
+  max-height: calc(100vh - 470px);
+  overflow-y: auto;
+}
+#spawner-panel h2 { font-size: 14px; margin-bottom: 8px; color: #cbd5e1; }
+#spawner-items {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+}
+.spawn-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 8px;
+  font-size: 11px;
+  border-left: 3px solid var(--cat-color);
+  text-align: left;
+}
+.spawn-btn i { margin-right: 0; }
+.spawn-btn:active { transform: scale(0.96); }
+
 /* --- Controles (parte inferior central) --- */
 #controls-panel {
   bottom: 16px;
