@@ -3,10 +3,16 @@
 
 import { CATEGORIES, CATEGORY_KEYS } from '../core/categories.js';
 
+// Ícones Font Awesome 6 (free/solid) por categoria.
 const VEHICLE_ICONS = {
-  HTTPS: '🏍️', QUIC: '🚌', HTTP: '🚕', DNS: '🚲', SSH: '🚚',
-  TCP: '🏎️', UDP: '🚓', ICMP: '🚐', ARP: '🚗', OTHER: '🚙',
+  HTTPS: 'fa-motorcycle', QUIC: 'fa-bus', HTTP: 'fa-taxi', DNS: 'fa-bicycle',
+  SSH: 'fa-truck-moving', TCP: 'fa-car-side', UDP: 'fa-car-on',
+  ICMP: 'fa-van-shuttle', ARP: 'fa-car-rear', OTHER: 'fa-car',
 };
+
+function icon(key) {
+  return `<i class="fa-solid ${VEHICLE_ICONS[key]}"></i>`;
+}
 
 export class HUD {
   constructor() {
@@ -32,8 +38,7 @@ export class HUD {
       const row = document.createElement('div');
       row.className = 'legend-row';
       row.innerHTML =
-        `<span class="legend-icon">${VEHICLE_ICONS[key]}</span>` +
-        `<span class="legend-swatch" style="background:${cat.css}"></span>` +
+        `<span class="legend-icon" style="color:${cat.css}">${icon(key)}</span>` +
         `<span class="legend-proto">${cat.label}</span>` +
         `<span class="legend-vehicle">${cat.vehicle}</span>`;
       el.appendChild(row);
@@ -42,8 +47,8 @@ export class HUD {
 
   setStatus(text) { this.statusEl.textContent = text; }
 
-  showAlert(text, kind = 'warn') {
-    this.alertEl.textContent = text;
+  showAlert(text, kind = 'warn', iconClass = 'fa-triangle-exclamation') {
+    this.alertEl.innerHTML = `<i class="fa-solid ${iconClass}"></i> ${text}`;
     this.alertEl.className = `alert show ${kind}`;
     clearTimeout(this.alertTimer);
     this.alertTimer = setTimeout(() => { this.alertEl.className = 'alert'; }, 4000);
@@ -71,7 +76,7 @@ export class HUD {
     if (domKey) {
       const c = CATEGORIES[domKey];
       this.statDominant.innerHTML =
-        `<span style="color:${c.css}">${VEHICLE_ICONS[domKey]} ${c.label}</span>`;
+        `<span style="color:${c.css}">${icon(domKey)} ${c.label}</span>`;
     }
     const pps = Math.round(win.totalPackets * (1000 / windowMs));
     this.statPps.textContent = pps.toLocaleString('pt-BR');
@@ -82,7 +87,9 @@ export class HUD {
   }
 
   setVehicleCount(n, congested) {
-    this.statVehicles.textContent = congested ? `${n} ⚠ congestionado` : String(n);
+    this.statVehicles.innerHTML = congested
+      ? `${n} <i class="fa-solid fa-traffic-light"></i> congestionado`
+      : String(n);
     this.statVehicles.style.color = congested ? '#fbbf24' : '';
   }
 

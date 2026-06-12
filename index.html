@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>netRush — tráfego de rede em 3D</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
   <link rel="stylesheet" href="css/style.css" />
   <script type="importmap">
     {
@@ -41,14 +42,16 @@
   <div id="controls-panel" class="panel">
     <div class="control-group">
       <label class="file-button">
-        📁 Abrir PCAP / dataset
+        <i class="fa-solid fa-folder-open"></i> Abrir PCAP / dataset
         <input type="file" id="file-input" accept=".pcap,.pcapng,.cap,.json,.csv" hidden />
       </label>
-      <button id="btn-demo" title="Gera tráfego sintético de demonstração">🎮 Demo</button>
+      <button id="btn-demo" title="Gera tráfego sintético de demonstração">
+        <i class="fa-solid fa-gamepad"></i> Demo
+      </button>
     </div>
     <div class="control-group">
-      <button id="btn-play" disabled>▶ Iniciar</button>
-      <button id="btn-reset" disabled>⟲ Reiniciar</button>
+      <button id="btn-play" disabled><i class="fa-solid fa-play"></i> Iniciar</button>
+      <button id="btn-reset" disabled><i class="fa-solid fa-rotate-left"></i> Reiniciar</button>
     </div>
     <div class="control-group">
       <label>Velocidade
@@ -79,7 +82,7 @@
     <div class="control-group">
       <label class="toggle">
         <input type="checkbox" id="cinematic-toggle" />
-        <span>Modo cinematográfico</span>
+        <span><i class="fa-solid fa-clapperboard"></i> Modo cinematográfico</span>
       </label>
     </div>
     <div id="progress-bar"><div id="progress-fill"></div></div>

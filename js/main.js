@@ -26,6 +26,10 @@ const settings = {
 let rawPackets = null; // pacotes do arquivo atual (para reagregação ao mudar a janela)
 let aggregated = null;
 
+function setButtonLabel(btn, iconClass, text) {
+  btn.innerHTML = `<i class="fa-solid ${iconClass}"></i> ${text}`;
+}
+
 // Detecção de anomalia: média/desvio móveis do total de pacotes por janela.
 const anomaly = { values: [], lastAlert: -Infinity };
 // Comboios: categorias presentes em N janelas consecutivas.
@@ -39,7 +43,7 @@ function detectAnomaly(win) {
     if (win.totalPackets > mean + 3 * std && win.totalPackets > 20 &&
         replay.clock - anomaly.lastAlert > 5) {
       anomaly.lastAlert = replay.clock;
-      hud.showAlert('⚠ Tráfego anormal detectado: pico fora do padrão!', 'danger');
+      hud.showAlert('Tráfego anormal detectado: pico fora do padrão!', 'danger', 'fa-triangle-exclamation');
       world.triggerAlert();
     }
   }
@@ -70,8 +74,8 @@ replay.onWindow = (win, speed) => {
 };
 
 replay.onEnd = () => {
-  hud.setStatus('Replay concluído. Use ⟲ para reiniciar ou carregue outro arquivo.');
-  btnPlay.textContent = '▶ Iniciar';
+  hud.setStatus('Replay concluído. Use "Reiniciar" ou carregue outro arquivo.');
+  setButtonLabel(btnPlay, 'fa-play', 'Iniciar');
 };
 
 // ------------------------------------------------------------ carga
@@ -99,7 +103,7 @@ function rebuild() {
   hud.reset();
   anomaly.values.length = 0;
   for (const k of CATEGORY_KEYS) streaks[k] = 0;
-  btnPlay.textContent = '▶ Iniciar';
+  setButtonLabel(btnPlay, 'fa-play', 'Iniciar');
 }
 
 async function handleFile(file) {
@@ -132,11 +136,11 @@ btnPlay.addEventListener('click', () => {
   if (replay.finished) { replay.reset(); traffic.clear(); hud.reset(); }
   if (replay.playing) {
     replay.pause();
-    btnPlay.textContent = '▶ Continuar';
+    setButtonLabel(btnPlay, 'fa-play', 'Continuar');
     hud.setStatus('Pausado.');
   } else {
     replay.play();
-    btnPlay.textContent = '⏸ Pausar';
+    setButtonLabel(btnPlay, 'fa-pause', 'Pausar');
     hud.setStatus('Reproduzindo tráfego…');
   }
 });
@@ -146,7 +150,7 @@ btnReset.addEventListener('click', () => {
   traffic.clear();
   hud.reset();
   anomaly.values.length = 0;
-  btnPlay.textContent = '▶ Iniciar';
+  setButtonLabel(btnPlay, 'fa-play', 'Iniciar');
   hud.setStatus('Replay reiniciado.');
 });
 
@@ -211,7 +215,7 @@ function frame(now) {
   // Horário de pico: ponte muito ocupada.
   if (traffic.congested && !rushHourShown) {
     rushHourShown = true;
-    hud.showAlert('🚦 Horário de pico: a ponte está congestionada!', 'warn');
+    hud.showAlert('Horário de pico: a ponte está congestionada!', 'warn', 'fa-traffic-light');
   } else if (!traffic.congested && traffic.onBridgeCount < 40) {
     rushHourShown = false;
   }

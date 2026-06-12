@@ -68,6 +68,11 @@ export class TrafficManager {
     if (last && last.progress < last.vehicle.userData.length + MIN_GAP + 2) return false;
 
     const vehicle = createVehicle(item.cat, item.sizeFactor);
+    // Só nasce se houver espaço para o novo veículo inteiro mais a folga.
+    if (last && last.progress - last.vehicle.userData.length / 2 <
+        vehicle.userData.length / 2 + MIN_GAP) {
+      return false;
+    }
     const z = item.dir === 'out' ? BRIDGE.lanesOut[laneIdx] : BRIDGE.lanesIn[laneIdx];
     const x0 = item.dir === 'out' ? -BRIDGE.spawnX : BRIDGE.spawnX;
     vehicle.position.set(x0, BRIDGE.deckY + 0.1, z);
@@ -113,16 +118,29 @@ export class TrafficManager {
         for (let i = 0; i < lane.length; i++) {
           const v = lane[i];
           let target = v.desired * globalFactor;
-          if (i > 0) {
-            const ahead = lane[i - 1];
+          const ahead = i > 0 ? lane[i - 1] : null;
+          if (ahead) {
             const gap = ahead.progress - v.progress
               - (ahead.vehicle.userData.length + v.vehicle.userData.length) / 2;
-            if (gap < MIN_GAP) target = Math.min(target, ahead.speed * 0.9);
-            else if (gap < MIN_GAP * 3) target = Math.min(target, ahead.speed + (gap - MIN_GAP));
+            // Frenagem antecipada: começa a reduzir bem antes de encostar.
+            if (gap < MIN_GAP) target = Math.min(target, Math.max(0, ahead.speed - 2));
+            else if (gap < MIN_GAP * 4) {
+              target = Math.min(target, ahead.speed + (gap - MIN_GAP) * 1.2);
+            }
           }
           // Aceleração/frenagem suaves.
           v.speed += (target - v.speed) * Math.min(1, dt * 2.5);
           v.progress += v.speed * dt * this.speedMultiplier;
+          // Trava rígida: nunca avança além do para-choque do veículo da
+          // frente (o da frente já foi atualizado neste frame).
+          if (ahead) {
+            const limit = ahead.progress - 0.7
+              - (ahead.vehicle.userData.length + v.vehicle.userData.length) / 2;
+            if (v.progress > limit) {
+              v.progress = Math.max(0, limit);
+              v.speed = Math.min(v.speed, ahead.speed);
+            }
+          }
           const x = dir === 'out' ? -BRIDGE.spawnX + v.progress : BRIDGE.spawnX - v.progress;
           v.vehicle.position.x = x;
         }

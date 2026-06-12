@@ -68,14 +68,14 @@ body {
 .legend-row {
   display: flex;
   align-items: center;
-  gap: 7px;
+  gap: 8px;
   font-size: 12px;
-  padding: 2.5px 0;
+  padding: 3px 0;
 }
-.legend-swatch {
-  width: 10px;
-  height: 10px;
-  border-radius: 3px;
+.legend-icon {
+  width: 20px;
+  text-align: center;
+  font-size: 13px;
   flex-shrink: 0;
 }
 .legend-proto { color: #e2e8f0; font-weight: 600; min-width: 84px; }
@@ -116,6 +116,8 @@ button, .file-button {
 }
 button:hover:not(:disabled), .file-button:hover { background: #334155; }
 button:disabled { opacity: 0.4; cursor: not-allowed; }
+button i, .file-button i, .toggle i { margin-right: 5px; }
+.alert i { margin-right: 7px; }
 select {
   background: #1e293b;
   color: #e2e8f0;

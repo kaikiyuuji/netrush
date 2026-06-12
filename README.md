@@ -24,9 +24,10 @@ Abra `http://localhost:8080`, clique em **📁 Abrir PCAP / dataset** (ou arrast
 um arquivo para a janela) e pressione **▶ Iniciar**. Sem arquivo à mão, o botão
 **🎮 Demo** gera 2 minutos de tráfego sintético.
 
-> A biblioteca Three.js é carregada via CDN, então a primeira execução precisa
-> de internet. Para uso 100% offline, baixe `three.module.js` e os addons e
-> ajuste o import map no `index.html`.
+> As bibliotecas Three.js (3D) e Font Awesome (ícones da interface) são
+> carregadas via CDN, então a primeira execução precisa de internet. Para uso
+> 100% offline, baixe `three.module.js`, os addons e o CSS da Font Awesome e
+> ajuste as referências no `index.html`.
 
 ## Formatos aceitos
 
@@ -94,16 +95,20 @@ pacotes HTTPS num segundo viram ~16 motocicletas, não 800.
 - Origem pública e destino privado → sentido oposto.
 - Caso ambíguo → quem mandou o primeiro pacote do fluxo é tratado como cliente.
 
-### Gameplay
+### Gameplay e ambientação
 
-- Ponte cheia gera **congestionamento**: veículos desaceleram (car-following) e
-  o HUD avisa "horário de pico".
+- Cenário de **anoitecer urbano**: ponte estaiada com fitas de LED, skyline
+  iluminado nas duas margens, céu em gradiente com estrelas e lua, água
+  animada e veículos modernos com faróis/lanternas acesos.
+- Ponte cheia gera **congestionamento**: veículos desaceleram (car-following
+  com trava anticolisão — um veículo nunca atravessa o outro) e o HUD avisa
+  "horário de pico".
 - Pacotes maiores geram veículos maiores e mais lentos.
 - Fluxos presentes em 4+ janelas seguidas viram **comboios** na mesma faixa.
 - Picos 3σ acima da média móvel disparam **alerta de tráfego anormal** com
   pulso de luz vermelha na cena.
-- **Modo cinematográfico**: pôr do sol, câmera orbitando e protocolos raros
-  mais visíveis.
+- **Modo cinematográfico**: paleta neon synthwave, câmera orbitando e
+  protocolos raros mais visíveis.
 
 ## Controles
 
