@@ -187,6 +187,21 @@ document.getElementById('cinematic-toggle').addEventListener('change', (e) => {
   world.setCinematic(settings.cinematic);
 });
 
+// Mostrar/ocultar toda a interface (botão ou tecla H).
+const uiToggle = document.getElementById('ui-toggle');
+function toggleUi() {
+  const hidden = document.body.classList.toggle('ui-hidden');
+  uiToggle.innerHTML = `<i class="fa-solid ${hidden ? 'fa-eye' : 'fa-eye-slash'}"></i>`;
+  uiToggle.title = hidden ? 'Mostrar interface (H)' : 'Ocultar interface (H)';
+}
+uiToggle.addEventListener('click', toggleUi);
+window.addEventListener('keydown', (e) => {
+  if (e.key.toLowerCase() === 'h' && !e.repeat &&
+      !['INPUT', 'SELECT', 'TEXTAREA'].includes(document.activeElement?.tagName)) {
+    toggleUi();
+  }
+});
+
 // Arrastar e soltar arquivo.
 let dragCount = 0;
 window.addEventListener('dragenter', (e) => { e.preventDefault(); if (++dragCount === 1) document.body.classList.add('dragging'); });

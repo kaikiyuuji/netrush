@@ -97,11 +97,15 @@ pacotes HTTPS num segundo viram ~16 motocicletas, não 800.
 
 ### Gameplay e ambientação
 
-- Cenário de **noite urbana low-poly**: céu quase preto, prédios escuros com
-  janelas grandes e esparsas iluminadas nas margens e ao fundo, placa
-  luminosa "PACKET HIGHWAY" sobre a pista, postes com barra de luz, asfalto
-  escuro com linhas amarelas, barcos cruzando a baía e veículos chapados
-  com faróis e lanternas quadrados acesos.
+- Cenário de **infraestrutura digital noturna**: a ponte cruza um "mar de
+  dados" — piso em grade de circuito com rios de luz fluindo por baixo, um
+  por sentido — com partículas discretas de dados subindo pela cena. À
+  esquerda, o distrito da **rede local** (quarteirões baixos e torres de
+  comunicação, acento verde); à direita, o distrito da **internet** (data
+  center e torres de servidores com painéis de LED, acento azul).
+- Os veículos entram e saem por **gateways em túnel** nas duas pontas
+  (moldura luminosa verde/azul): nada surge nem desaparece "do nada", e a
+  via continua para dentro das fachadas, sem terminar abruptamente.
 - Ponte cheia gera **congestionamento**: veículos desaceleram (car-following
   com trava anticolisão — um veículo nunca atravessa o outro) e o HUD avisa
   "horário de pico".
@@ -125,8 +129,14 @@ pacotes HTTPS num segundo viram ~16 motocicletas, não 800.
 - Tráfego ao vivo — painel com a lista das requisições passando (nome,
   direção e tamanho de cada uma)
 - Modo cinematográfico — liga/desliga
+- Ocultar interface — botão no canto superior direito (ou tecla `H`)
+  esconde todos os painéis para ver só a cena
 - Mouse — arrastar para orbitar, botão direito para deslocar (pan) e roda
   para zoom (fora do modo cinematográfico)
+
+A interface usa painéis de vidro translúcido em preto e branco; as cores
+aparecem apenas onde carregam informação (categorias de protocolo,
+direção do tráfego e alertas).
 
 ## Privacidade
 
